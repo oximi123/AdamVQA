@@ -29,8 +29,7 @@ if __name__ == '__main__':
     # dataset_name = 'sample_video'
     llm_name = LLMName.LlavaVideoQwen7b # todo
     # llm_name = LLMName.VideoLlamaMistral7b
-    top_k_video = 50 # todo
-    num_min_query = None
+    top_k_video = 200
     # dataset_name = VQADataset.MSVD_QA # todo
     # dataset_name = VQADataset.MSRVTT_QA
     dataset_name = VQADataset.GroundQA
@@ -38,16 +37,9 @@ if __name__ == '__main__':
     dataset_loader = VideoDatasetLoader()
     config_set_type = PrepConfigSetType.All
     video_id2questions, dataset_path, question_type, video_id2name = dataset_loader.load_dataset(dataset_name,
-                                                                                                 top_k_video=top_k_video,
-                                                                                                 num_min_query=num_min_query)
-    # assert len(video_id2questions) == top_k_video
+                                                                                                 top_k_video=top_k_video)
     modality2config_set = dataset_loader.get_dataset_prep_config_set(dataset_name, type=config_set_type)
-    # 保存video meta info
     for modality, configs in modality2config_set.items(): # 枚举每一个modality
-        # if modality != Modality.VisionToken: # todo 只用vision token
-        #     continue
-        if modality != Modality.Object:
-            continue
         modality2results = {
             modality: [] for modality in modality2config_set.keys()
         }

@@ -204,7 +204,7 @@ class PrepConfig:
         return OmegaConf.create({
             'modality': 'object',
             'confidence_threshold': 0.3,
-            'text_prompt': None,  # None代表检测所有在close set里面的object
+            'text_prompt': None,
             'model': 'APE-L_D',
             'num_frame': 16,
             'sampling_method': 'uniform'
@@ -241,9 +241,3 @@ class PrepConfig:
             'num_frame': 16,
             'sampling_method': 'uniform'
         })
-
-
-if __name__ == '__main__':
-    from pprint import pprint
-    # valid_modality_config = PrepConfig.get_valid_modality_config(PrepConfig.get_valid_modality_combinations())
-    # pprint(valid_modality_config[0:3])

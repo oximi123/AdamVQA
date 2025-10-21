@@ -1082,33 +1082,5 @@ inference_parameter.force_inference = False
 
 # online_object_inference_mode = False  # 是否使用APE进行基于query的online object detection
 num_measure_retrieve_latency = 3
-top_k_video = 1
-
-if __name__ == '__main__':
-    # llm_name = LLMName.LlavaVideoQwen7b
-    llm_name = LLMName.VideoLlamaMistral7b
-    inference_parameter.llm_name = llm_name
-    llm_extractor_name = llm_name
-    keyword_extractor_names = [
-        llm_extractor_name,
-        # KeyWordExtractorNames.KeyBertExtractor,
-        # KeyWordExtractorNames.BareExtractor,
-        # KeyWordExtractorNames.NonExtractor,
-    ]
-    dataset_names = [
-        # VQADataset.NextQA,
-        VQADataset.MSVD_QA,
-        # VQADataset.SampleVideo
-    ]
-    pre_config_set_types = [
-        PrepConfigSetType.Combination,
-        # PrepConfigSetType.VisiontokenOnly,
-        # PrepConfigSetType.CaptionOnly
-    ]
-    load_llm()
-    warm_up()
-
-    iterate_run(llm_name, dataset_names, pre_config_set_types, keyword_extractor_names, run_inference_for_dataset,
-                top_k_video=top_k_video, inference_parameter=inference_parameter)
 
 # %%
