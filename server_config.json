@@ -1,0 +1,20 @@
+{
+  "frame": {
+    "port": 9999
+  },
+  "visiontoken": {
+    "port": 9998
+  },
+  "caption":  {
+    "port": 9997
+  },
+  "object":  {
+    "port": 9996
+  },
+  "ocr":  {
+    "port": 9995
+  },
+  "asr":  {
+    "port": 9994
+  }
+}
