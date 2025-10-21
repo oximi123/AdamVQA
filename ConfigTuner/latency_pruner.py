@@ -11,11 +11,7 @@ import optuna
 # -------------------------------
 
 @dataclass
-class TokenLatencyModel:
-    """
-    Simple linear TTFT model:  TTFT_seconds ~= a * tokens + b
-    You can fit (a, b) offline on your platform once, then reuse.
-    """
+
     a: float = 0.0
     b: float = 0.0
 
@@ -42,27 +38,7 @@ class KnobSpec:
     direction: MonotonicDir
 
 
-# -------------------------------
-# Latency-aware Space Pruner
-# -------------------------------
-
 class LatencyAwareSpacePruner(optuna.pruners.BasePruner):
-    """
-    Training-free pruner implementing the 'Latency-aware Space Pruner' idea.
-
-    Usage in objective:
-        trial.set_user_attr("config", cfg)
-
-        est_ttft = tlm.tokens_to_ttft(estimate_tokens(cfg))
-        trial.report(est_ttft, step=0)
-        if trial.should_prune():
-            raise optuna.TrialPruned("SLO violation (estimate)")
-
-        actual_ttft = measure_ttft(cfg)
-        trial.report(actual_ttft, step=1)
-        if trial.should_prune():
-            raise optuna.TrialPruned("SLO violation (actual)")
-    """
 
     def __init__(
         self,
@@ -77,12 +53,10 @@ class LatencyAwareSpacePruner(optuna.pruners.BasePruner):
         self.tl = token_latency_model
         self.study_bounds_key = study_bounds_key
         self.safety_margin = float(safety_margin)
-        # cache knob specs by (modality, knob)
         self._mono: Dict[Tuple[str, str], MonotonicDir] = {
             (k.modality, k.name): k.direction for k in monotone_knobs
         }
 
-    # ------------- Public helper APIs -------------
 
     def max_tokens(self) -> float:
         return self.tl.max_tokens_under_slo(self.slo - self.safety_margin)
@@ -90,7 +64,6 @@ class LatencyAwareSpacePruner(optuna.pruners.BasePruner):
     def update_bounds_from_violation(
         self, study: "optuna.study.Study", config: Dict[str, Any]
     ) -> None:
-        """Tighten monotone bounds when SLO is violated for the given config."""
         if not self._mono:
             return
         bounds = self._get_bounds(study)
@@ -117,7 +90,6 @@ class LatencyAwareSpacePruner(optuna.pruners.BasePruner):
         config: Dict[str, Any],
         bounds: Dict[str, Dict[str, float]]
     ) -> bool:
-        """Return True if config satisfies all recorded monotone bounds."""
         for key, max_allowed in bounds.get("increasing", {}).items():
             mod, knob = key.split(".", 1)
             if mod in config and knob in config[mod]:
@@ -131,13 +103,11 @@ class LatencyAwareSpacePruner(optuna.pruners.BasePruner):
         return True
 
     def get_pruning_bounds(self, study: "optuna.study.Study") -> Dict[str, Dict[str, float]]:
-        """Fetch current recorded monotone bounds."""
         return self._get_bounds(study)
 
     # ------------- Optuna hook -------------
 
     def prune(self, study: "optuna.study.Study", trial: "optuna.trial.FrozenTrial") -> bool:
-        """Prune if estimated/actual TTFT exceeds SLO (latest reported value)."""
         if not trial.intermediate_values:
             return False
 
@@ -157,7 +127,6 @@ class LatencyAwareSpacePruner(optuna.pruners.BasePruner):
 
         return False
 
-    # ------------- Internal utils -------------
 
     def _get_bounds(self, study: "optuna.study.Study") -> Dict[str, Dict[str, float]]:
         b = study.system_attrs.get(self.study_bounds_key, None)
@@ -167,10 +136,6 @@ class LatencyAwareSpacePruner(optuna.pruners.BasePruner):
         return init
 
 
-# -------------------------------
-# VT pre-cap & monotonic profiling helpers
-# -------------------------------
-
 def precap_vt_bounds(
     study: "optuna.study.Study",
     pruner: "LatencyAwareSpacePruner",
@@ -179,12 +144,6 @@ def precap_vt_bounds(
     token_estimator: "callable[[Dict[str, Any]], float]" = None,
     vt_modality_name: str = "VT",
 ) -> Dict[str, Dict[str, float]]:
-    """
-    BEFORE tuning:
-      Enumerate VT knob grid, estimate TTFT via pruner's TokenLatencyModel,
-      keep only configs within SLO, and derive per-knob monotone bounds
-      (max for 'increasing', min for 'decreasing').
-    """
     keys = list(vt_grid.keys())
     values_list = [list(vt_grid[k]) for k in keys]
     if not keys:
@@ -246,9 +205,7 @@ def profile_monotonic_knobs(
     base_cfg: Dict[str, Any],
     knob_space: Dict[Tuple[str,str], Tuple[Any, Any]],
 ) -> Iterable[KnobSpec]:
-    """
-    Infer monotonic directions by profiling tokens(low) vs tokens(high) per knob.
-    """
+
     specs = []
     for (mod, knob), (lo, hi) in knob_space.items():
         cfg_lo = {k: (v.copy() if isinstance(v, dict) else v) for k,v in base_cfg.items()}

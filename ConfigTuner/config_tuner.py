@@ -51,36 +51,28 @@ def _as_float_array(values: Sequence[float]) -> np.ndarray:
 
 
 def _get_tpe_settings(sampler: optuna.samplers.TPESampler) -> Dict[str, Any]:
-    """Extract gamma and ParzenEstimatorParameters from TPESampler.
-    Falls back to sensible defaults if private fields are not found."""
     settings: Dict[str, Any] = {}
 
-    # gamma: top-quantile ratio for 'l' set
     gamma = getattr(sampler, "_gamma", None)
-    # _gamma can be a function in some versions; fallback to attribute _gamma0/_gamma/constant
     if callable(gamma):
-        # leave None; we'll compute n_good downstream as int(gamma * n_trials) if possible
         settings["gamma"] = None
     else:
         settings["gamma"] = float(gamma) if gamma is not None else 0.15  # default
 
-    # ParzenEstimatorParameters
     pe_params = None
     for attr in ["_parzen_estimator_parameters", "_pe_params", "_ParzenEstimatorParameters"]:
         if hasattr(sampler, attr):
             pe_params = getattr(sampler, attr)
             break
-    # If it's a dict of kwargs, instantiate; if already a ParzenEstimatorParameters, keep it
     if ParzenEstimatorParameters is not None:
         if isinstance(pe_params, ParzenEstimatorParameters):
             settings["pe_params"] = pe_params
         elif isinstance(pe_params, dict):
             settings["pe_params"] = ParzenEstimatorParameters(**pe_params)
         else:
-            # Construct with defaults similar to Optuna's
             settings["pe_params"] = ParzenEstimatorParameters()
     else:
-        settings["pe_params"] = None  # we will error later if PE is None
+        settings["pe_params"] = None
 
     return settings
 
@@ -91,26 +83,22 @@ def _fit_lg_for_param(
     gamma: Optional[float],
     pe_params
 ):
-    """Fit Parzen estimators for l and g for one parameter."""
     if ParzenEstimator is None or ParzenEstimatorParameters is None:
         raise RuntimeError("Optuna ParzenEstimator internals not available. Please use a compatible Optuna version.")
 
     if len(xs_all) < 3:
         return None, None
 
-    # Sort by objective value DESC (maximize)
     order = np.argsort(-ys_all)
     xs_sorted = xs_all[order]
     ys_sorted = ys_all[order]
 
     if gamma is None:
-        # default 15% top
         n_good = max(1, int(0.15 * len(xs_sorted)))
     else:
         n_good = max(1, int(float(gamma) * len(xs_sorted)))
 
     xs_good = xs_sorted[:n_good]
-    # Build Parzen KDEs
     l_pe = ParzenEstimator(_as_float_array(xs_good), low, high, False, pe_params)
     g_pe = ParzenEstimator(_as_float_array(xs_all),  low, high, False, pe_params)
     return l_pe, g_pe
@@ -138,7 +126,6 @@ def estimate_mc_values_from_tpe_nested(
     if not trials:
         return {m: 0.0 for m in (mc_list or ["ALL"])}
 
-    # Build l/g estimators per dotted parameter
     bounds = {}
     for mod, knobs in nested_space.items():
         for knob, choices in knobs.items():
