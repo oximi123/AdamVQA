@@ -3,19 +3,17 @@ import os
 from videollama2 import DEFAULT_VIDEO_TOKEN, tokenizer_multimodal_token, KeywordsStoppingCriteria, model_init
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-from KeywordExtractor.keywordextractor import LLMKeywordExtractor, KeyBertKeywordExtractor, BareKeywordExtractor, \
+from KeywordExtractor.keywordextractor import BareKeywordExtractor, \
     KeywordExtractorBuilder, NonKeywordExtractor, BaseKeywordExtractor, VLMTuneKeywordExtractor
-from iterate_util import iterate_run
 
 import warnings
 
-from preprocess_constant import *
+from util.preprocess_constant import *
 
 warnings.filterwarnings("ignore")  # 忽略所有警告
 from vidrag_pipeline.filter_keywords import filter_keywords
 from vidrag_pipeline.rag_retriever_dynamic import retrieve_documents_with_dynamic
 from vidrag_pipeline.scene_graph import generate_scene_graph_description
-from util import *
 from transformers import CLIPProcessor, CLIPModel
 
 clip_model = None
@@ -31,8 +29,8 @@ import ast
 import socket
 import pickle
 from llava.model.language_model.llava_qwen import LlavaQwenForCausalLM
-from preprocess_config import PrepConfig
-from prompt_factory import PromptFactory
+from util.preprocess_config import PrepConfig
+from util.prompt_factory import PromptFactory
 import clip
 
 max_new_tokens = 512
@@ -448,7 +446,6 @@ def warm_up():
 
 
 # %%
-from load_dataset import VideoDatasetLoader
 
 
 def save_retrieve_result(llm_name, retrieve_result, dataset_name, video_id, modality, keyword_extractor, config=None):

@@ -1,7 +1,7 @@
-from preprocess_constant import KnobType
+from util.preprocess_constant import KnobType
 from script_evaluation import evaluate_for_one_video
 from script_run_inference import run_inference_for_one_video
-from util import *
+
 
 def judge_knob_type(knob_choice):
     assert len(knob_choice) > 0

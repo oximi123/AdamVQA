@@ -1,16 +1,11 @@
 # %%
-import os.path
-import pickle
 from abc import abstractmethod
 from collections import defaultdict
 import ast
-from typing import List, Dict
-
 
 from ConfigTuner.latency_pruner import precap_vt_bounds
 from ConfigTuner.objective import Objective
-from preprocess_constant import VQADataset
-from util import *
+from util.preprocess_constant import VQADataset
 
 import optuna.samplers
 from statistics import mean
@@ -38,7 +33,7 @@ def VT_token_estimator(frame_num):
 
 
 from __future__ import annotations
-from typing import Dict, Any, List, Tuple, Optional, Sequence
+from typing import Dict, Any, List, Optional, Sequence
 import math
 import numpy as np
 import optuna

@@ -11,10 +11,10 @@ import torch.functional as F
 
 from ConfigTuner.config_tuner import VLMTuner, constraints_func
 from ConfigTuner.latency_pruner import TokenLatencyModel, KnobSpec, LatencyAwareSpacePruner
-from load_dataset import VideoDatasetLoader
-from preprocess_constant import Modality, VQADataset
+from util.load_dataset import VideoDatasetLoader
+from util.preprocess_constant import Modality, VQADataset
 from script_run_inference import inference_parameter
-from util import *
+
 
 class VideoKnowledgeBase:
     def __init__(self, llm_name, dataset_name, extractor,

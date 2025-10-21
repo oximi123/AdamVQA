@@ -1,11 +1,11 @@
-from util import *
+from util.util import *
 import socket
 import pickle
 import time
 import os
 import sys
 from pathlib import Path
-from util import get_video_path
+from util.util import get_video_path
 
 sys.path.append(str(Path('preprocess_servers/Katna').parent))
 from preprocess_servers.Katna.video import Video

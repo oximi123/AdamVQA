@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from keybert import KeyBERT
 
-from preprocess_constant import ObjectType, Modality, LLMName
+from util.preprocess_constant import ObjectType, Modality, LLMName
 
 sample_query = '''Supervised learning is the machine learning task of learning a function that
          maps an input to an output based on example input-output pairs. It infers a

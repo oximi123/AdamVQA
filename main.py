@@ -4,10 +4,10 @@ import pickle
 from ConfigTuner.config_tuner import constraints_func, VLMTuner
 from ConfigTuner.knowledgebase import VideoKnowledgeBase
 from ConfigTuner.latency_pruner import TokenLatencyModel, KnobSpec, LatencyAwareSpacePruner
-from load_dataset import VideoDatasetLoader
-from preprocess_constant import VQADataset, PrepConfigSetType, KeyWordExtractorNames, LLMName, Modality
+from util.load_dataset import VideoDatasetLoader
+from util.preprocess_constant import VQADataset, PrepConfigSetType, KeyWordExtractorNames, LLMName, Modality
 from script_run_inference import inference_parameter
-from experiment_setting import *
+from util.experiment_setting import *
 
 from util import get_tuning_result_file_path
 

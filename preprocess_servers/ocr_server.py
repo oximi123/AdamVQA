@@ -1,14 +1,11 @@
 import socket
 import pickle
 import os
-import os
-import json
 import time
 
 import easyocr
 
-from preprocess_config import PrepConfig
-from util import *
+from util.preprocess_config import PrepConfig
 
 
 def cold_start():

@@ -1,8 +1,7 @@
 import sys
-from pathlib import Path
 
-from preprocess_config import PrepConfig
-from preprocess_constant import CaptionModelName
+from util.preprocess_config import PrepConfig
+from util.preprocess_constant import CaptionModelName
 
 sys.path.insert(0, 'LaViLa/')
 import os
@@ -10,26 +9,19 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import urllib.request
 from collections import OrderedDict
-import numpy as np
-import time
 import torch
 import torchvision.transforms as transforms
 import torchvision.transforms._transforms_video as transforms_video
-from util import *
 
 from LaViLa.lavila.data.video_transforms import Permute
 from LaViLa.lavila.models.models import VCLM_OPENAI_TIMESFORMER_LARGE_336PX_GPT2_XL
 from LaViLa.lavila.models.tokenizer import MyGPT2Tokenizer
 from LaViLa.eval_narrator import decode_one
-import json
 import cv2
-import pickle
 
 import socket
 import pickle
 import os
-import os
-import json
 import time
 
 import easyocr

@@ -1,17 +1,13 @@
 import socket
 import pickle
 import os
-import os
-import json
 import time
 
 from llava.model.builder import load_pretrained_model
 from llava.model.language_model.llava_qwen import LlavaQwenForCausalLM
-import torch
 
-from preprocess_config import PrepConfig
-from util import *
-from videollama2 import model_init, mm_infer, mm_infer_embedding
+from util.preprocess_config import PrepConfig
+from videollama2 import model_init
 from videollama2.utils import disable_torch_init
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"

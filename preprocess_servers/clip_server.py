@@ -1,13 +1,10 @@
 
 import torch
 
-from preprocess_config import PrepConfig
-from util import *
+from util.preprocess_config import PrepConfig
 import socket
 import pickle
 import os
-import os
-import json
 import time
 
 

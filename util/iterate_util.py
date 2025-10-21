@@ -3,7 +3,7 @@ import copy
 from load_dataset import VideoDatasetLoader
 from preprocess_config import PrepConfig
 from preprocess_constant import PrepConfigSetType
-from util import InferenceParameter
+from util.util import InferenceParameter
 
 
 def iterate_run(llm_name, dataset_names, prep_config_set_types, keyword_extractors_names, func, inference_parameter : InferenceParameter = None, top_k_video = 10, iter_extractors = True):

@@ -2,15 +2,13 @@ import socket
 import pickle
 import os
 
-from preprocess_config import PrepConfig
+from util.preprocess_config import PrepConfig
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-import json
 import time
 
 import torch
 import torchaudio
-from util import *
 from transformers import WhisperForConditionalGeneration, WhisperProcessor
 import ffmpeg
 

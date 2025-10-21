@@ -1,7 +1,6 @@
 import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-import ast
 import itertools
 import socket
 import pickle
@@ -10,17 +9,13 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 
 import cv2
-import math
 import numpy as np
 from ultralytics import RTDETR
 
-from KeywordExtractor.keywordextractor import BareKeywordExtractor, LLMKeywordExtractor
 from ape_tools.ape_api import setup_cfg
-from preprocess_config import PrepConfig
-from preprocess_constant import ObjModelName, VQADataset
+from util.preprocess_constant import ObjModelName, VQADataset
 from preprocess_servers.APE.predictor_lazy import VisualizationDemo
 from preprocess_servers.tracker.byte_tracker import BYTETracker
-from util import *
 import clip
 import torchvision.transforms as T
 import random as rd

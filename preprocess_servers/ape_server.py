@@ -7,9 +7,8 @@ import cv2
 import numpy as np
 
 from ape_tools.ape_api import setup_cfg
-from preprocess_config import PrepConfig
+from util.preprocess_config import PrepConfig
 from preprocess_servers.APE.predictor_lazy import VisualizationDemo
-from util import *
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
@@ -33,7 +32,6 @@ def save_frames(frames):
 import tqdm
 from detectron2.data.detection_utils import read_image
 from detectron2.evaluation.coco_evaluation import instances_to_coco_json
-import matplotlib.pyplot as plt
 
 # model2config = {
 #     'APE-L_D': 'code/APE/configs/LVISCOCOCOCOSTUFF_O365_OID_VGR_SA1B_REFCOCO_GQA_PhraseCut_Flickr30k/ape_deta/ape_deta_vitl_eva02_clip_vlf_lsj1024_cp_16x4_1080k.py',

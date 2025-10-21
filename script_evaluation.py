@@ -1,19 +1,16 @@
-from iterate_util import iterate_run
+from util.iterate_util import iterate_run
 
 import os
 from collections import defaultdict
 from multiprocessing import Pool
 
-from load_dataset import VideoDatasetLoader
-from preprocess_config import PrepConfig
 import argparse
 from tqdm import tqdm
 import json
 import openai
 import ast
 from time import sleep
-from preprocess_constant import QuestionType, Modality, VQADataset, PrepConfigSetType, KeyWordExtractorNames
-from util import *
+from util.preprocess_constant import QuestionType, Modality, VQADataset, PrepConfigSetType, KeyWordExtractorNames
 import shutil
 
 class ScoreMeter:

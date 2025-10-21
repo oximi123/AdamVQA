@@ -1,9 +1,8 @@
 if __name__ != "__main__":
     raise ImportError("This module can only be run directly, not imported!")
-import pickle
 
-from preprocess_config import *
-from load_dataset import VideoDatasetLoader
+from util.preprocess_config import *
+from util.load_dataset import VideoDatasetLoader
 
 def send_preprocess_request(llm_name, dataset_name, video_name, config, results=None):
     print('Config: {}'.format(config))
