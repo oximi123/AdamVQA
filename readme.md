@@ -30,7 +30,7 @@ python script_preprocess.py
 
 4. Run the following script to start the tuning.
 ```
-python script_preprocess.py
+python main.py
 ```
 ## Citation format (TBD)
 
