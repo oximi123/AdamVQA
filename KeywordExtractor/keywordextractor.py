@@ -137,15 +137,3 @@ class LLMKeywordExtractor(BaseKeywordExtractor):  # 使用LLM进行retrieve
     def extract_keywords(self, query, modalities):
         prompt = self.prompt_factory.retrieve_prompt(query)
         return self.llm_gen_func(prompt, video=None)
-
-
-class VLMTuneKeywordExtractor(BaseKeywordExtractor):
-    def __init__(self, model):
-        self.model = model
-        pass
-
-    def retrieve(self, query, doc):
-        pass
-
-    def extract_keywords(self, query, doc):
-        pass

@@ -19,7 +19,7 @@ import os
 import json
 
 from preprocess_constant import modality2priority, PrepConfigSetType, Modality, CaptionModelName, KeyWordExtractorNames, \
-    QuestionType, LLMName
+    QuestionType, LLMName, KnobType
 import time
 from sklearn.metrics.pairwise import cosine_similarity
 import optuna
@@ -918,6 +918,23 @@ def avg_set_similarity(set1):  # 衡量一个set里元素的
     sim_matrix = np.cosine_similarity(set1)
     pass
 
+def judge_knob_type(knob_choice):
+    assert len(knob_choice) > 0
+    if len(knob_choice) == 1:
+        return KnobType.CategoricalKnob
+    if isinstance(knob_choice[0], (str, bool)):
+        return KnobType.CategoricalKnob
+    is_categorical = False
+    step = knob_choice[1] - knob_choice[0]
+    for i in range(1, len(knob_choice) - 1):
+        if knob_choice[i] + step != knob_choice[i + 1]:
+            is_categorical = True
+    if is_categorical:
+        return KnobType.CategoricalKnob
+    if isinstance(knob_choice[0], float):
+        return KnobType.FloatKnob
+    if isinstance(knob_choice[0], int):
+        return KnobType.IntKnob
 
 np_state = None
 rd_state = None
