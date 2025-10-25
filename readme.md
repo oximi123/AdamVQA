@@ -13,7 +13,7 @@ AdamVQA is a Efficient Modality Adaptation for SLO-aware LLM-based Video Questio
 ```
 pip install -r requirements.txt
 ```
-2. Download the following dataset and put them into the `data/` directory.
+2. Download the following dataset and put them into the `data/` directory, and put the video files in to `{dataset}/videos`.
 - MSVD-QA
 - MSVRTT-QA
 - EgoTimeVQA
