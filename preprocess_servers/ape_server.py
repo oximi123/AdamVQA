@@ -23,7 +23,7 @@ def save_frames(frames):
     for i, frame in enumerate(frames):
         img = Image.fromarray(frame)
         home_path = os.getenv('HOME')
-        file_path = f'{home_path}/code/Video-RAG-master-main/vidrag_pipeline/restore/frame_{i}.png'
+        file_path = f'{home_path}/AdamVQA/vidrag_pipeline/restore/frame_{i}.png'
         img.save(file_path)
         file_paths.append(file_path)
     return file_paths

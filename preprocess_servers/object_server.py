@@ -37,7 +37,7 @@ def save_frames(frames):
     for i, frame in enumerate(frames):
         img = Image.fromarray(frame)
         home_path = os.getenv('HOME')
-        file_path = f'{home_path}/code/Video-RAG-master-main/vidrag_pipeline/restore/frame_{i}.png'
+        file_path = f'{home_path}/AdamVQA/vidrag_pipeline/restore/frame_{i}.png'
         img.save(file_path)
         file_paths.append(file_path)
     return file_paths
@@ -94,7 +94,7 @@ def warm_up_model():
 class APEDetector(ObjectDetector):
     def __init__(self, model_name='APELD'):
         self.model2config = OmegaConf.load(
-            os.path.join(os.getenv('HOME'), 'code', 'Video-RAG-master-main', 'ape.yaml')).model2config
+            os.path.join(os.getenv('HOME'), 'AdamVQA', 'ape.yaml')).model2config
         self.model_name = model_name
         model_config = self.model2config[self.model_name]
         cfg = setup_cfg(model_name, model_config)

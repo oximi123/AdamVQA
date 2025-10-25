@@ -940,12 +940,10 @@ np_state = None
 rd_state = None
 default_seed = 42
 set_random_seed(default_seed)
-server_config = OmegaConf.load(os.path.join(os.getenv('HOME'), 'code/Video-RAG-master-main', 'server_config.yaml'))
+server_config = OmegaConf.load(os.path.join(os.getenv('HOME'), 'AdamVQA', 'server_config.yaml'))
 warm_up_video_name = '2440175990.mp4'
 warm_up_dataset = 'sample_video'
 warm_up_video_path = os.path.join(os.getenv('HOME'), 'dataset', warm_up_dataset, 'videos', warm_up_video_name)
 hatch = ['//', '\\\\', '||', '-', '+', None, '.', '*', 'x', 'o', 'O', ]
 token_margin = 100
 colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
-
-last_video_num = 120  # 上一次inference的video数量
