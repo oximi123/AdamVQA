@@ -5,10 +5,12 @@ import ast
 
 from ConfigTuner.latency_pruner import precap_vt_bounds
 from ConfigTuner.objective import Objective
-from util.preprocess_constant import VQADataset
+from util.preprocess_constant import VQADataset, Modality
 
 import optuna.samplers
 from statistics import mean
+
+from util.util import sampler_factory, lhs_sampling, config2optuna_config
 
 
 def constraints_func(trial):
@@ -44,7 +46,9 @@ import optuna
 from optuna.samplers._tpe.parzen_estimator import _ParzenEstimator as ParzenEstimator
 from optuna.samplers._tpe.parzen_estimator import _ParzenEstimatorParameters as ParzenEstimatorParameters
 
-
+from optuna.terminator import EMMREvaluator
+from optuna.terminator import MedianErrorEvaluator
+from optuna.terminator import Terminator
 
 def _as_float_array(values: Sequence[float]) -> np.ndarray:
     return np.asarray([float(v) for v in values], dtype=float)
@@ -342,6 +346,13 @@ class VLMTuner(ConfigTuner):
         self.phase1_sampler, _ = sampler_factory(self.phase1_sampler_name, self.n_startup_trials, seed,
                                                constraints_func if latency_constraint is not None else None)
 
+        emmr_improvement_evaluator = EMMREvaluator()
+        median_error_evaluator = MedianErrorEvaluator(emmr_improvement_evaluator)
+        terminator = Terminator(
+            improvement_evaluator=emmr_improvement_evaluator,
+            error_evaluator=median_error_evaluator,
+        )
+
         # step 1: get transfer knowledge (top modality combi)
         pruned_space = self.__get_pruned_space_by_latency(self.dataset_name, modality2config_set,
                                                           latency_constraint)
@@ -382,6 +393,8 @@ class VLMTuner(ConfigTuner):
         change_thresh = 0.03
         min_budget_per_iter = 3
         lhs_sample_budget = 3
+        next_stage_flag = False
+
         if self.knowledge_base is not None:
             videoid2mcs, videoid2sims = self.get_transfer_mcs()
             videoid2mcs = self.get_pruned_mc(pruned_space, videoid2mcs)
@@ -389,7 +402,6 @@ class VLMTuner(ConfigTuner):
             mc2budgets = self.assign_budget(total_budget, mc2score, min_budget=min_budget_per_iter)
             sorted_mc_scores = sorted(mc2score.items(), key=lambda item: item[1], reverse=True)
             visted_mcs = set()
-            next_phase_flag = False
             cur_trial_num = 0
             for mc_idx, (cur_mc, score) in enumerate(sorted_mc_scores):
                 mc_start_idx = cur_trial_num
@@ -407,9 +419,6 @@ class VLMTuner(ConfigTuner):
                         study.enqueue_trial(optuna_sample)
                     study.optimize(obj, n_trials=lhs_sample_budget)
                     cur_trial_num += lhs_sample_budget
-                    if self.__need_next_phase(study.trials):
-                        next_phase_flag = True
-                        break
                     if self.__need_next_mc(study.trials):
                         continue
 
@@ -424,8 +433,8 @@ class VLMTuner(ConfigTuner):
                     study.optimize(obj, n_trials=1)
                     cur_trial_num += 1
                     mc2budgets[cur_mc] -= 1
-                    if self.__need_next_phase(study.trials):
-                        next_phase_flag = True
+                    if terminator.should_terminate(study):
+                        next_stage_flag = True
                         break
                     if self.__need_next_mc(study.trials):
                         next_mc_flag = True
@@ -441,7 +450,7 @@ class VLMTuner(ConfigTuner):
                                 mc2budgets[cur_mc] += recycle_budget
                                 if recycle_budget_needed == 0:
                                     break
-                if next_phase_flag:
+                if next_stage_flag:
                     break
                 if next_mc_flag:
                     assert sum(mc2budgets.values()) + len(study.trials) == total_budget
@@ -450,6 +459,9 @@ class VLMTuner(ConfigTuner):
         else:
             while total_budget > 0:
                 study.optimize(obj, n_trials=1)
+                if terminator.should_terminate(study):
+                    next_stage_flag = True
+                    break
                 total_budget -= 1
 
 
