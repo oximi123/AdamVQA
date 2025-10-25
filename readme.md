@@ -23,6 +23,8 @@ pip install -r requirements.txt
 https://github.com/YueFan1014/VideoAgent
 https://github.com/Leon1207/Video-RAG-master
 https://huggingface.co/lmsys/vicuna-13b-v1.5
+https://huggingface.co/lmms-lab/LLaVA-Video-7B-Qwen2
+https://huggingface.co/DAMO-NLP-SG/VideoLLaMA2-7B-Base
 ```
 4. Run the following script to launch the modality extracting server and extract modality from the videos.
 ```
