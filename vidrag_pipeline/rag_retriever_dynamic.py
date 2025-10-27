@@ -3,8 +3,6 @@ import torch
 import numpy as np
 import faiss
 
-from sample_scirpt.measure_sim_latency import end_time
-
 tokenizer = AutoTokenizer.from_pretrained('facebook/contriever')
 model = AutoModel.from_pretrained('facebook/contriever')
 
