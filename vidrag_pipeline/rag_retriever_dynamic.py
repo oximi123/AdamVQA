@@ -3,6 +3,8 @@ import torch
 import numpy as np
 import faiss
 
+from sample_scirpt.measure_sim_latency import end_time
+
 tokenizer = AutoTokenizer.from_pretrained('facebook/contriever')
 model = AutoModel.from_pretrained('facebook/contriever')
 
@@ -11,8 +13,10 @@ def text_to_vector(text, max_length=512):
     with torch.no_grad():
         outputs = model(**inputs)
     return outputs.last_hidden_state.mean(dim=1).squeeze().cpu().numpy()
-
+import time
 def retrieve_documents_with_dynamic(documents, queries, threshold=0.4):
+
+    start_time = time.monotonic()
     if isinstance(queries, list):
         query_vectors = np.array([text_to_vector(query) for query in queries])
         average_query_vector = np.mean(query_vectors, axis=0)
@@ -22,14 +26,20 @@ def retrieve_documents_with_dynamic(documents, queries, threshold=0.4):
         query_vector = text_to_vector(queries)
         query_vector = query_vector / np.linalg.norm(query_vector)
         query_vector = query_vector.reshape(1, -1)
+    end_time = time.monotonic()
+    cur_vectorize_query_time = end_time - start_time
 
     document_vectors = np.array([text_to_vector(doc) for doc in documents])
     document_vectors = document_vectors / np.linalg.norm(document_vectors, axis=1, keepdims=True)
     dimension = document_vectors.shape[1]
-    
     index = faiss.IndexFlatIP(dimension)
     index.add(document_vectors)
+
+    start_time = time.monotonic()
     lims, D, I = index.range_search(query_vector, threshold)
+    end_time = time.monotonic()
+    cur_faiss_retrieve_time = end_time - start_time
+
     start = lims[0]
     end = lims[1]
     I = I[start:end]
@@ -41,4 +51,4 @@ def retrieve_documents_with_dynamic(documents, queries, threshold=0.4):
         idx = I.tolist()
         top_documents = [documents[i] for i in idx]
 
-    return top_documents, idx
+    return top_documents, idx, cur_faiss_retrieve_time, cur_vectorize_query_time
