@@ -13,7 +13,9 @@ def text_to_vector(text, max_length=512):
     return outputs.last_hidden_state.mean(dim=1).squeeze().cpu().numpy()
 import time
 def retrieve_documents_with_dynamic(documents, queries, threshold=0.4):
-
+    top_documents, idx, cur_faiss_retrieve_time, cur_vectorize_query_time = [], [], 0, 0
+    if queries[0] is None:
+        return top_documents, idx, cur_faiss_retrieve_time, cur_vectorize_query_time
     start_time = time.monotonic()
     if isinstance(queries, list):
         query_vectors = np.array([text_to_vector(query) for query in queries])
@@ -34,19 +36,27 @@ def retrieve_documents_with_dynamic(documents, queries, threshold=0.4):
     index.add(document_vectors)
 
     start_time = time.monotonic()
-    lims, D, I = index.range_search(query_vector, threshold)
-    end_time = time.monotonic()
-    cur_faiss_retrieve_time = end_time - start_time
+    try:
+        lims, D, I = index.range_search(query_vector, threshold)
+        end_time = time.monotonic()
+        cur_faiss_retrieve_time = end_time - start_time
 
-    start = lims[0]
-    end = lims[1]
-    I = I[start:end]
+        start = lims[0]
+        end = lims[1]
+        I = I[start:end]
 
-    if len(I) == 0:
+        if len(I) == 0:
+            top_documents = []
+            idx = []
+        else:
+            idx = I.tolist()
+            top_documents = [documents[i] for i in idx]
+    except AssertionError:
         top_documents = []
         idx = []
-    else:
-        idx = I.tolist()
-        top_documents = [documents[i] for i in idx]
+        cur_faiss_retrieve_time = 0
+        print('Index search failed')
+
+
 
     return top_documents, idx, cur_faiss_retrieve_time, cur_vectorize_query_time
